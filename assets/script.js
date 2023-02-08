@@ -39,7 +39,7 @@ city.val('');
 //  console.log(latitude)
  // console.log(longitude)
  
- let queryURL = 'https://api.openweathermap.org/data/2.5/forecast?q=' + cityName + '&appid=' + APIkeyOpenWeather;
+ let queryURL = 'https://api.openweathermap.org/data/2.5/forecast?q=' + cityName + '&units=metric&appid=' + APIkeyOpenWeather;
 
   $.ajax({
     url: queryURL,
@@ -54,10 +54,8 @@ let cityTitle = response.city.name;
     console.log(cityTitle);
     let currentTimeUTC = moment();
     let currentWeatherIcon = "https://openweathermap.org/img/w/" + response.list[0].weather[0].icon + ".png";
-    let tempKelvin = response.list[0].main.temp;
-    let tempCelcius = tempKelvin - 273.15;
-    let currentTemp = "Temperature: " + Math.trunc(tempCelcius) + "°C";
-    let currentWind = "Wind: " + response.list[0].wind.speed + " MPH";
+    let currentTemp = "Temperature: " + response.list[0].main.temp + "°C";
+    let currentWind = "Wind: " + response.list[0].wind.speed + " KPH";
     let currentHumidity = "Humidity: " + response.list[0].main.humidity + "%";
     
     
@@ -72,7 +70,7 @@ let cityTitle = response.city.name;
 
  
 
-let queryURL2 = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + latitude + '&lon=' + longitude + '&appid=' + APIkeyOpenWeather;
+let queryURL2 = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + latitude + '&lon=' + longitude + '&units=metric&appid=' + APIkeyOpenWeather;
   
   $.ajax({
     url: queryURL2,
@@ -87,19 +85,17 @@ let queryURL2 = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + latitu
     
     let forecastDate = weatherForecast.list[i].dt_txt;
     let weatherIcon = "https://openweathermap.org/img/w/" + weatherForecast.list[i].weather[0].icon + ".png";
-    let tempKelvin = weatherForecast.list[i].main.temp;
-    let tempCelcius = tempKelvin - 273.15;
-    let temperature = "Temperature: " + Math.trunc(tempCelcius) + "°C";
+    let temperature = "Temperature: " + weatherForecast.list[i].main.temp + "°C";
+    let windSpeed = "Wind: " + weatherForecast.list[i].wind.speed + " KPH";
     let humidity = "Humidity: " + weatherForecast.list[i].main.humidity + "%";
-    let windSpeed = "Wind Speed: " + weatherForecast.list[i].wind.speed + " MPH";
-    
- let forecastDay = `<p>${forecastDate}</p>
+
+    let forecastDay = `<p>${forecastDate}</p>
             <img src="${weatherIcon}"/>
             <p>${temperature}</p>
             <p>${humidity}</p>
             <p>${windSpeed}</p>`;
-(forecastDayEl).append(forecastDay);
-}          
+    (forecastDayEl).append(forecastDay);
+  }          
 });  
 });
 }
