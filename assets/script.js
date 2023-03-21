@@ -1,118 +1,109 @@
-// Commented Geocode code - run out of credits
-//let APIkeyGeocode = '315331413024549227211x95562';
-let APIkeyOpenWeather = '45ecf5127bc13b481a29c95b7dc21e20';
+  const inputEl = $('#search-input');
+  const searchEl = $('#search-button');
+  const clearEl = $('#clear-history');
+  let historyEl = $('#history');
+  let searchHistory = JSON.parse(localStorage.getItem('search')) || [];
 
-let city = $('#search-input');
-let searchBtn = $('#search-button');
-let cityListEl = $('#history');
-let formEl = $('#search-form');
-let searchHist = JSON.parse(localStorage.getItem('search'));
-// Create a function to handle the form submission event that captures the form's `<input>` value and prints it to the `cityListEl` as a `<li>`
-function handleFormSubmit(event) {
+  searchEl.on('click', function(event) {
     event.preventDefault();
-
-// Select form element by its `name` attribute and get its value
- let cityName = city.val();
- console.log(cityName);
- 
-// if there's nothing in the form entered, don't print to the page
-if (!cityName) {
-  return;
-}
-
-// Clear input fields
-city.val('');
-
-//let cityEl = "'" + cityName + "'";
-//console.log(cityEl)
-//$.ajax({
-//    url: 'https://geocode.xyz/',
-//    data: {
-//      auth: '901884379011558898601x111552',
-//      locate: cityEl,
-//      json: '1'
- //   }
-//  }).then(function(data) {
-//    console.log(data);
-//  let latitude = data.latt;
-//  let longitude = data.longt;
-//  console.log(latitude)
- // console.log(longitude)
- 
- let queryURL = 'https://api.openweathermap.org/data/2.5/forecast?q=' + cityName + '&appid=' + APIkeyOpenWeather;
-
-  $.ajax({
-    url: queryURL,
-    method: "GET"
-  }).then(function (response) {
-    console.log(response);
-    let latitude = response.city.coord.lat;
-    let longitude = response.city.coord.lon;
-    console.log(latitude)
-    console.log(longitude)
-let cityTitle = response.city.name;
-    console.log(cityTitle);
-    let currentTimeUTC = moment();
-    let currentWeatherIcon = "https://openweathermap.org/img/w/" + response.list[0].weather[0].icon + ".png";
-    let tempKelvin = response.list[0].main.temp;
-    let tempCelcius = tempKelvin - 273.15;
-    let currentTemp = "Temperature: " + Math.trunc(tempCelcius) + "°C";
-    let currentWind = "Wind: " + response.list[0].wind.speed + " MPH";
-    let currentHumidity = "Humidity: " + response.list[0].main.humidity + "%";
-    
-    
-    let currentWeatherHTML = `
-        <h2><strong>${cityTitle} ${currentTimeUTC.format("(DD/MM/YYYY)")} <img src="${currentWeatherIcon}"/></strong></h2>
-            <p>${currentTemp}</p>
-            <p>${currentHumidity}</p>
-            <p>${currentWind}</p>`
-    
-    $('#today').append(currentWeatherHTML);
-   
-
- 
-
-let queryURL2 = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + latitude + '&lon=' + longitude + '&appid=' + APIkeyOpenWeather;
-  
-  $.ajax({
-    url: queryURL2,
-    method: "GET"
+    $("#today").empty();
+    $("#forecast").empty();
+    const searchCity = inputEl.val();
+    renderWeather(searchCity);
+    searchHistory.push(searchCity);
+    localStorage.setItem("search", JSON.stringify(searchHistory));
+    renderSearchHistory();
   })
-      .then(function (weatherForecast) {
-        console.log(weatherForecast)
 
-  const forecastDayEl = $('.forecast');
-  console.log(forecastDayEl);
-  for(let i = 0; i < forecastDayEl.length; i=+8) {
+  clearEl.on('click', function() {
+    searchHistory = [];
+    renderSearchHistory();
+  })
+
+  function renderWeather() {
+    const searchCity = inputEl.val();
+    const APIkeyOpenWeather = '45ecf5127bc13b481a29c95b7dc21e20';
+    const queryURL = 'https://api.openweathermap.org/data/2.5/forecast?q=' + searchCity + '&units=metric&appid=' + APIkeyOpenWeather;
     
-    let forecastDate = weatherForecast.list[i].dt_txt;
-    let weatherIcon = "https://openweathermap.org/img/w/" + weatherForecast.list[i].weather[0].icon + ".png";
-    let tempKelvin = weatherForecast.list[i].main.temp;
-    let tempCelcius = tempKelvin - 273.15;
-    let temperature = "Temperature: " + Math.trunc(tempCelcius) + "°C";
-    let humidity = "Humidity: " + weatherForecast.list[i].main.humidity + "%";
-    let windSpeed = "Wind Speed: " + weatherForecast.list[i].wind.speed + " MPH";
-    
- let forecastDay = `<p>${forecastDate}</p>
-            <img src="${weatherIcon}"/>
-            <p>${temperature}</p>
-            <p>${humidity}</p>
-            <p>${windSpeed}</p>`;
-(forecastDayEl).append(forecastDay);
-}          
-});  
-});
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).
+      then(function (response) {
+        console.log(response);
+        const latitude = response.city.coord.lat;
+        const longitude = response.city.coord.lon;
+        console.log(latitude);
+        console.log(longitude);
+
+        const cityName = response.city.name;
+        console.log(cityName);
+        const currentTimeUTC = moment();
+        const currentWeatherIcon = "https://openweathermap.org/img/w/" + response.list[0].weather[0].icon + ".png";
+        const currentTemp = "Temperature: " + response.list[0].main.temp + "°C";
+        const currentWind = "Wind: " + response.list[0].wind.speed + " KPH";
+        const currentHumidity = "Humidity: " + response.list[0].main.humidity + "%";
+        
+        const currentWeatherHTML = `
+          <h2><strong>${cityName} ${currentTimeUTC.format("(DD/MM/YYYY)")} <img src="${currentWeatherIcon}"/></strong></h2>
+              <p>${currentTemp}</p>
+              <p>${currentWind}</p>
+              <p>${currentHumidity}</p>`
+      
+      $('#today').append(currentWeatherHTML);
+      const lat = latitude;
+      const lon = longitude;
+      const queryURL2 = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&units=metric&appid=' + APIkeyOpenWeather;
+
+    $.ajax({
+      url: queryURL2,
+      method: "GET"
+    })
+      .then(function (response) {
+        console.log(response);
+
+        let forecastDayEl = $('.forecast');
+          const div = $("<div class='col-12'>");
+          const h2 = $('<h2><strong>5-Day forecast</strong></h2>');
+          div.append(h2);
+          $('#forecast').prepend(div);
+        for (let i = 0; i < forecastDayEl.length; i++) {
+          forecastDayEl[i].innerHTML = '';
+          const index = i*8 + 4;
+          const cityName = response.city.name;
+          const forecastDate = response.list[index].dt_txt.split(',');
+          const forecastWeatherIcon = "https://openweathermap.org/img/w/" + response.list[index].weather[0].icon + ".png";
+          const forecastTemp = "Temperature: " + response.list[index].main.temp + "°C";
+          const forecastWind = "Wind: " + response.list[index].wind.speed + " KPH";
+          const forecastHumidity = "Humidity: " + response.list[index].main.humidity + "%";
+          
+          const forecastWeatherHTML = `
+          <h5><strong>${cityName} ${forecastDate}</strong></h5>
+          <img src="${forecastWeatherIcon}"/>
+              <p>${forecastTemp}</p>
+              <p>${forecastWind}</p>
+              <p>${forecastHumidity}</p>`
+      
+      $(forecastDayEl[i]).append(forecastWeatherHTML);
+
+        }
+      });  
+  });
 }
+  
+  function renderSearchHistory() {
+    historyEl.innerHTML = '';
+    for (let i = 0; i < searchHistory.length; i++) {
+      const historyItem = $('<button btn-primary type=text class=form-control d-block bg-white>');
+      historyItem.value($(searchHistory[i]))
+      historyItem.on('click', function() {
+        renderWeather(historyItem.value());
+      })
+      historyEl.append(historyItem);
+    }
+  }
 
-localStorage.setItem('search', JSON.stringify(searchHist));
-renderHistory;
-
-// Submit event on the form
-formEl.on('submit', handleFormSubmit);
-
-function renderHistory(){
-  cityListEl.innerHTML = '';
-  const listItem = $('<button btn-primary type=text class=form-control d-block bg-white>');
-listItem.text(cityName);
-$('#history').append(listItem);
-}
+renderSearchHistory();
+if (searchHistory.length > 0) {
+    renderWeather(searchHistory[searchHistory.lenght - 1]);
+  }
