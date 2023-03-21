@@ -2,22 +2,32 @@
   const searchEl = $('#search-button');
   const clearEl = $('#clear-history');
   let historyEl = $('#history');
-  let searchHistory = JSON.parse(localStorage.getItem('search')) || [];
+  let searchHistory = [];
+  if (localStorage.getItem('search')) {
+    searchHistory = JSON.parse(localStorage.getItem('search'));
+  }
 
   searchEl.on('click', function(event) {
     event.preventDefault();
-    $("#today").empty();
-    $("#forecast").empty();
+    $('#today').empty();
+    $('#forecast').empty();
     const searchCity = inputEl.val();
-    renderWeather(searchCity);
-    searchHistory.push(searchCity);
-    localStorage.setItem("search", JSON.stringify(searchHistory));
-    renderSearchHistory();
+    if (!searchHistory.includes(searchCity)) {
+      searchHistory.push(searchCity);
+      renderWeather(searchCity);
+      renderSearchHistory();
+    } else {
+      renderWeather(searchCity);
+    }
+    localStorage.setItem('search', JSON.stringify(searchHistory));
+    $(inputEl).val('');
   })
 
-  clearEl.on('click', function() {
+  clearEl.on('click', function(event) {
+    event.preventDefault();
+    localStorage.clear();
     searchHistory = [];
-    renderSearchHistory();
+    $("#history").empty();
   })
 
   function renderWeather() {
@@ -84,26 +94,20 @@
               <p>${forecastWind}</p>
               <p>${forecastHumidity}</p>`
       
-      $(forecastDayEl[i]).append(forecastWeatherHTML);
-
+          $(forecastDayEl[i]).append(forecastWeatherHTML);
         }
       });  
   });
 }
   
   function renderSearchHistory() {
-    historyEl.innerHTML = '';
     for (let i = 0; i < searchHistory.length; i++) {
-      const historyItem = $('<button btn-primary type=text class=form-control d-block bg-white>');
-      historyItem.value($(searchHistory[i]))
-      historyItem.on('click', function() {
-        renderWeather(historyItem.value());
-      })
+      const historyItem = $('<button>');
+      historyItem.text(inputEl.val().toUpperCase());
+      historyItem.addClass("city-button btn btn-secondary mt-2");
       historyEl.append(historyItem);
+      historyItem.addEventListener("click", function () {
+        renderWeather(historyItem.value);
+      })
     }
-  }
-
-renderSearchHistory();
-if (searchHistory.length > 0) {
-    renderWeather(searchHistory[searchHistory.lenght - 1]);
   }
