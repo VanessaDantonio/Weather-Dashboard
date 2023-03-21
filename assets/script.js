@@ -29,9 +29,8 @@
     searchHistory = [];
     $("#history").empty();
   })
-
-  function renderWeather() {
-    const searchCity = inputEl.val();
+  const searchCity = inputEl.val();
+  function renderWeather(searchCity) {
     const APIkeyOpenWeather = '45ecf5127bc13b481a29c95b7dc21e20';
     const queryURL = 'https://api.openweathermap.org/data/2.5/forecast?q=' + searchCity + '&units=metric&appid=' + APIkeyOpenWeather;
     
@@ -50,8 +49,8 @@
         console.log(cityName);
         const currentTimeUTC = moment();
         const currentWeatherIcon = "https://openweathermap.org/img/w/" + response.list[0].weather[0].icon + ".png";
-        const currentTemp = "Temperature: " + response.list[0].main.temp + "°C";
-        const currentWind = "Wind: " + response.list[0].wind.speed + " KPH";
+        const currentTemp = "Temperature: " + response.list[0].main.temp.toFixed(1) + "°C";
+        const currentWind = "Wind: " + response.list[0].wind.speed.toFixed(1) + " KPH";
         const currentHumidity = "Humidity: " + response.list[0].main.humidity + "%";
         
         const currentWeatherHTML = `
@@ -59,6 +58,8 @@
               <p>${currentTemp}</p>
               <p>${currentWind}</p>
               <p>${currentHumidity}</p>`
+        const icon = `<img src="${currentWeatherIcon}"/>`
+        $('#icon').append(icon);
       
       $('#today').append(currentWeatherHTML);
       const lat = latitude;
@@ -83,8 +84,8 @@
           const cityName = response.city.name;
           const forecastDate = response.list[index].dt_txt.split(',');
           const forecastWeatherIcon = "https://openweathermap.org/img/w/" + response.list[index].weather[0].icon + ".png";
-          const forecastTemp = "Temperature: " + response.list[index].main.temp + "°C";
-          const forecastWind = "Wind: " + response.list[index].wind.speed + " KPH";
+          const forecastTemp = "Temperature: " + response.list[index].main.temp.toFixed(1) + "°C";
+          const forecastWind = "Wind: " + response.list[index].wind.speed.toFixed(1) + " KPH";
           const forecastHumidity = "Humidity: " + response.list[index].main.humidity + "%";
           
           const forecastWeatherHTML = `
