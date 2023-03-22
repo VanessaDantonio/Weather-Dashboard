@@ -5,13 +5,9 @@ header {
 }
 
 aside {
-  margin-top: 100px;
+  margin-top: 20px;
   border: 1px solid black;
   border-radius: 0.500rem;
-}
-
-.input-group {
-  display: flexbox;
 }
 
 #search-input {
@@ -35,22 +31,25 @@ aside {
   background-color: rgb(186, 185, 185);
 }
 
-
 #today {
   padding: 20px;
 
 }
 
-#forecastRow {
-  padding-left: 20px;
-  padding-right: 20px;
-  justify-content: space-between;
-}
 #todaySection{
-    display: flex;
+  display: flex;
 }
+
 #icon {
-    display: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
+
+#forecast {
+  padding-left: 20px;
+}
+
+.card {
+    background-color:rgb(141, 202, 243);
+  }  
